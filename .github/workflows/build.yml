@@ -1,28 +1,20 @@
-# Pipeline CI/CD: tests -> sonar -> build -> docker -> deploy
 name: CI/CD Pipeline
 
 on:
-  # Ejecucion manual desde la pestana Actions
   workflow_dispatch:
-  # Estrategia trunk-based: main es el tronco y las ramas feature/** son de vida corta
   push:
     branches:
       - main
       - 'feature/**'
-  # Cada Pull Request hacia main tambien ejecuta el pipeline
   pull_request:
     branches:
       - main
 
 env:
   JAVA_VERSION: '17'
-  # Nombre del repositorio en Docker Hub (debe coincidir con el que creaste)
   IMAGE_NAME: banco
 
 jobs:
-  # ---------------------------------------------------------------
-  # 1. Pruebas unitarias + cobertura (JaCoCo) + envio a Coveralls
-  # ---------------------------------------------------------------
   tests:
     name: Unit tests and coverage
     runs-on: ubuntu-latest
@@ -42,18 +34,13 @@ jobs:
 
       - name: Upload coverage to Coveralls
         uses: coverallsapp/github-action@v2
-        # Quitar continue-on-error cuando Coveralls ya funcione
         continue-on-error: true
         env:
-          # Solo hace falta si el repo es privado (opcional)
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
         with:
           file: target/site/jacoco/jacoco.xml
           format: jacoco
 
-  # ---------------------------------------------------------------
-  # 2. Analisis estatico con SonarCloud (solo en PR y en main)
-  # ---------------------------------------------------------------
   sonar:
     name: SonarCloud analysis
     needs: tests
@@ -84,13 +71,9 @@ jobs:
           org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
           -Dsonar.token=$SONAR_TOKEN
 
-  # ---------------------------------------------------------------
-  # 3. Construccion del JAR
-  # ---------------------------------------------------------------
   build:
     name: Build JAR
     needs: [tests, sonar]
-    # Si sonar se omite (push a una rama feature) el build igual corre
     if: ${{ always() && needs.tests.result == 'success' && (needs.sonar.result == 'success' || needs.sonar.result == 'skipped') }}
     runs-on: ubuntu-latest
     steps:
@@ -114,9 +97,6 @@ jobs:
           path: target/banco.jar
           if-no-files-found: error
 
-  # ---------------------------------------------------------------
-  # 4. Imagen Docker -> Docker Hub (solo desde main)
-  # ---------------------------------------------------------------
   docker:
     name: Build and push Docker image
     needs: build
@@ -150,9 +130,6 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
             ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-  # ---------------------------------------------------------------
-  # 5. Despliegue en la nube (Render) y prueba de humo
-  # ---------------------------------------------------------------
   deploy:
     name: Deploy to Render
     needs: docker
@@ -160,7 +137,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
-      # "banco" debe coincidir con IMAGE_NAME (arriba) y con el repo de Docker Hub
       IMAGE: docker.io/${{ secrets.DOCKER_USERNAME }}/banco:${{ github.sha }}
     steps:
       - name: Trigger Render deploy hook
@@ -175,7 +151,6 @@ jobs:
         run: echo "RENDER_DEPLOY_HOOK_URL no esta configurado; se omite el despliegue."
 
       - name: Smoke test on the cloud URL
-        # Define la variable de repositorio RENDER_SERVICE_URL (ej. https://banco-xxxx.onrender.com)
         if: vars.RENDER_SERVICE_URL != '' && env.RENDER_DEPLOY_HOOK_URL != ''
         run: |
           curl --fail --silent --show-error --retry 30 --retry-delay 10 --retry-all-errors \

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Banco - Arquitectura de Software</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+  <header class="site-header">
+    <h1>Banco</h1>
+    <p>Laboratorio 2 - Arquitectura de Software, Universidad de Antioquia</p>
+  </header>
+
+  <main id="contenido">
+    <div id="status" class="status" role="status" aria-live="polite"></div>
+
+    <div class="tabs" role="tablist" aria-label="Secciones de la aplicación">
+      <button type="button" role="tab" id="tab-customers" aria-controls="panel-customers" aria-selected="true" tabindex="0">Clientes</button>
+      <button type="button" role="tab" id="tab-transfer" aria-controls="panel-transfer" aria-selected="false" tabindex="-1">Transferir</button>
+      <button type="button" role="tab" id="tab-history" aria-controls="panel-history" aria-selected="false" tabindex="-1">Historial</button>
+    </div>
+
+    <!-- Vista 1: clientes -->
+    <section id="panel-customers" role="tabpanel" aria-labelledby="tab-customers">
+      <h2>Clientes</h2>
+      <div class="table-wrap">
+        <table>
+          <caption>Clientes registrados</caption>
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Número de cuenta</th>
+              <th scope="col" class="num">Saldo</th>
+            </tr>
+          </thead>
+          <tbody id="customers-body"></tbody>
+        </table>
+      </div>
+      <button type="button" id="customers-refresh" class="secondary">Actualizar lista</button>
+
+      <h3>Crear cliente</h3>
+      <form id="customer-form" novalidate>
+        <div class="field">
+          <label for="firstName">Nombre</label>
+          <input id="firstName" name="firstName" type="text" maxlength="50" required autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="lastName">Apellido</label>
+          <input id="lastName" name="lastName" type="text" maxlength="50" required autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="accountNumber">Número de cuenta</label>
+          <input id="accountNumber" name="accountNumber" type="text" required autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="balance">Saldo inicial</label>
+          <input id="balance" name="balance" type="number" min="0" step="0.01" required>
+        </div>
+        <button type="submit">Crear cliente</button>
+      </form>
+    </section>
+
+    <!-- Vista 2: transferencia -->
+    <section id="panel-transfer" role="tabpanel" aria-labelledby="tab-transfer" hidden>
+      <h2>Transferir dinero</h2>
+      <form id="transfer-form" novalidate>
+        <div class="field">
+          <label for="transfer-sender">Cuenta de origen</label>
+          <select id="transfer-sender" name="sender" required></select>
+          <p id="sender-hint" class="hint"></p>
+        </div>
+        <div class="field">
+          <label for="transfer-receiver">Cuenta de destino</label>
+          <select id="transfer-receiver" name="receiver" required></select>
+        </div>
+        <div class="field">
+          <label for="transfer-amount">Monto</label>
+          <input id="transfer-amount" name="amount" type="number" min="0.01" step="0.01" required>
+        </div>
+        <button type="submit">Transferir</button>
+      </form>
+    </section>
+
+    <!-- Vista 3: histórico por cliente -->
+    <section id="panel-history" role="tabpanel" aria-labelledby="tab-history" hidden>
+      <h2>Historial de transacciones</h2>
+      <div class="field">
+        <label for="history-account">Cuenta</label>
+        <select id="history-account" name="account"></select>
+      </div>
+      <button type="button" id="history-refresh" class="secondary">Actualizar historial</button>
+      <div class="table-wrap">
+        <table>
+          <caption id="history-caption">Selecciona una cuenta para ver sus transacciones</caption>
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Fecha y hora (servidor)</th>
+              <th scope="col">Tipo</th>
+              <th scope="col">Cuenta contraparte</th>
+              <th scope="col" class="num">Monto</th>
+            </tr>
+          </thead>
+          <tbody id="history-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Aplicación de laboratorio. Estado del servicio: <a href="/health">/health</a></p>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

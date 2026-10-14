@@ -17,13 +17,13 @@ env:
 jobs:
   tests:
     name: Unit tests and coverage
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
@@ -45,7 +45,7 @@ jobs:
     name: SonarCloud analysis
     needs: tests
     if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       pull-requests: read
@@ -56,7 +56,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
@@ -75,13 +75,13 @@ jobs:
     name: Build JAR
     needs: [tests, sonar]
     if: ${{ always() && needs.tests.result == 'success' && (needs.sonar.result == 'success' || needs.sonar.result == 'skipped') }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
@@ -101,7 +101,7 @@ jobs:
     name: Build and push Docker image
     needs: build
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -134,7 +134,7 @@ jobs:
     name: Deploy to Render
     needs: docker
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
       IMAGE: docker.io/${{ secrets.DOCKER_USERNAME }}/banco:${{ github.sha }}
@@ -154,4 +154,4 @@ jobs:
         if: vars.RENDER_SERVICE_URL != '' && env.RENDER_DEPLOY_HOOK_URL != ''
         run: |
           curl --fail --silent --show-error --retry 30 --retry-delay 10 --retry-all-errors \
-            --max-time 30 "${{ vars.RENDER_SERVICE_URL }}/"
+            --max-time 30 "${{ vars.RENDER_SERVICE_URL }}/health"

@@ -145,6 +145,16 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.12</version>
+				<configuration>
+					<excludes>
+						<exclude>**/entity/**</exclude>
+						<exclude>**/DTO/**</exclude>
+						<exclude>**/config/**</exclude>
+						<exclude>**/mapper/**</exclude>
+						<exclude>**/static/**</exclude>
+						<exclude>**/Lab1v2026Application.class</exclude>
+					</excludes>
+				</configuration>
 				<executions>
 					<execution>
 						<goals>

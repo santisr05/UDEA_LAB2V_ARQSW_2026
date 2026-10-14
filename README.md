@@ -1,4 +1,5 @@
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=santisr05_UDEA_LAB2V_ARQSW_2026&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=santisr05_UDEA_LAB2V_ARQSW_2026)
+[![Coverage Status](https://coveralls.io/repos/github/santisr05/UDEA_LAB2V_ARQSW_2026/badge.svg?branch=main)](https://coveralls.io/github/santisr05/UDEA_LAB2V_ARQSW_2026?branch=main)
 [![Cobertura](https://sonarcloud.io/api/project_badges/measure?project=santisr05_UDEA_LAB2V_ARQSW_2026&metric=coverage)](https://sonarcloud.io/summary/new_code?id=santisr05_UDEA_LAB2V_ARQSW_2026)
 [![Líneas duplicadas](https://sonarcloud.io/api/project_badges/measure?project=santisr05_UDEA_LAB2V_ARQSW_2026&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=santisr05_UDEA_LAB2V_ARQSW_2026)
 [![Líneas de código](https://sonarcloud.io/api/project_badges/measure?project=santisr05_UDEA_LAB2V_ARQSW_2026&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=santisr05_UDEA_LAB2V_ARQSW_2026)
